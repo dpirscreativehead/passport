@@ -1,0 +1,172 @@
+/* =========================================
+   COLOR TOKENS — green palette
+========================================= */
+
+:root {
+    --c-bg: #f2f1e6;          /* page background (tint of #fffeef) */
+    --c-surface: #fffeef;     /* cards / topbar */
+    --c-dark: #272c1a;        /* sidebar / text */
+    --c-accent: #9fd700;      /* primary accent */
+    --c-accent-2: #c7f545;    /* accent gradient end */
+    --c-muted: #446158;       /* secondary */
+    --c-text-soft: #5f6b5e;   /* soft text on light */
+
+    --radius-xl: 20px;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+
+    --shadow-card:
+        0 1px 2px rgba(39, 44, 26, 0.04),
+        0 14px 34px -14px rgba(39, 44, 26, 0.14);
+}
+
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Roboto", "Helvetica Neue", Arial, sans-serif;
+
+    background: var(--c-bg);
+    color: var(--c-dark);
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* page scroll lock while the mobile menu is open */
+body.menu-locked {
+    overflow: hidden;
+}
+
+::selection {
+    background: var(--c-accent);
+    color: var(--c-dark);
+}
+
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.app-layout {
+    width: 100%;
+    min-height: 100vh;
+
+    padding: 20px;
+
+    background: var(--c-bg);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   288px = 20px sidebar inset + 268px sidebar
+   (20px visual gap before content)
+========================================= */
+
+.main-content {
+    width: calc(100% - 288px);
+    margin-left: 288px;
+
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+/* =========================================
+   TOPBAR SLOT
+========================================= */
+
+.main-content > *:first-child {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   PAGE CONTENT
+========================================= */
+
+.page-content {
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* =========================================
+   TABLET  ( 250px = 14px inset + 236px sidebar )
+========================================= */
+
+@media (max-width: 1024px) {
+
+    .app-layout {
+        padding: 14px;
+    }
+
+    .main-content {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+
+        gap: 14px;
+    }
+}
+
+
+/* =========================================
+   MOBILE — sidebar becomes the top bar
+   74px = 10px top + 64px bar height
+========================================= */
+
+@media (max-width: 768px) {
+
+    .app-layout {
+        padding: 10px;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 74px;
+
+        gap: 12px;
+    }
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+    }
+}

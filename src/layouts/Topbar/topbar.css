@@ -1,0 +1,513 @@
+/* =========================================
+   TOPBAR — premium dark / lime
+   Mirrors the sidebar: same tokens, same
+   easing, same glow language. Edit tokens
+   in both files to keep them in sync.
+========================================= */
+
+.topbar {
+    /* ---------- THEME TOKENS (mirror of sidebar) ---------- */
+    --tb-accent: #9fd700;
+    --tb-accent-soft: #c7f545;
+    --tb-accent-rgb: 159, 215, 0;
+
+    --tb-ink: #fffeef;
+    --tb-ink-dim: rgba(255, 254, 239, 0.66);
+    --tb-ink-faint: rgba(255, 254, 239, 0.36);
+
+    --tb-surface: rgba(255, 254, 239, 0.05);
+    --tb-surface-strong: rgba(255, 254, 239, 0.09);
+    --tb-border: rgba(255, 254, 239, 0.07);
+
+    --tb-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+    width: 100%;
+    height: 74px;
+
+    flex-shrink: 0;
+
+    background: linear-gradient(180deg, #303722 0%, #272c1a 100%);
+
+    border: 1px solid var(--tb-border);
+    border-radius: 20px;
+
+    box-shadow:
+        0 24px 48px -16px rgba(30, 35, 18, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding: 0 14px 0 20px;
+
+    box-sizing: border-box;
+}
+
+/* inline SVGs sit on the text baseline — block fixes it */
+.topbar svg {
+    display: block;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.topbar-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.topbar-accent {
+    flex-shrink: 0;
+
+    width: 4px;
+    height: 40px;
+
+    border-radius: 99px;
+
+    background: linear-gradient(
+        180deg,
+        var(--tb-accent-soft) 0%,
+        var(--tb-accent) 45%,
+        rgba(var(--tb-accent-rgb), 0.12) 100%
+    );
+
+    box-shadow: 0 0 14px rgba(var(--tb-accent-rgb), 0.45);
+}
+
+.topbar-heading-text {
+    min-width: 0;
+}
+
+.topbar-title {
+    margin: 0;
+
+    color: var(--tb-ink);
+
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.topbar-subtitle {
+    margin: 3px 0 0;
+
+    color: var(--tb-ink-faint);
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   RIGHT SIDE
+========================================= */
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* ---------- LIVE DATE PILL ---------- */
+
+.topbar-date {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    height: 42px;
+    padding: 0 16px;
+
+    background: var(--tb-surface);
+    border: 1px solid var(--tb-border);
+    border-radius: 13px;
+
+    color: var(--tb-ink-dim);
+    font-size: 12.5px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+/* any icon inside the pill picks up the lime */
+.topbar-date svg {
+    color: var(--tb-accent);
+}
+
+/* optional live dot — drop <i class="topbar-live-dot"></i>
+   inside .topbar-date if you want a "live" heartbeat */
+.topbar-live-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--tb-accent);
+
+    animation: tb-live-pulse 2.2s ease-out infinite;
+}
+
+@keyframes tb-live-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tb-accent-rgb), 0.55);
+    }
+
+    50% {
+        box-shadow: 0 0 0 5px rgba(var(--tb-accent-rgb), 0);
+    }
+}
+
+
+/* ---------- NOTIFICATION BELL ---------- */
+
+.topbar-bell {
+    position: relative;
+
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    background: var(--tb-surface-strong);
+    border: 1px solid rgba(255, 254, 239, 0.12);
+    border-radius: 13px;
+
+    color: var(--tb-ink-dim);
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background 0.25s var(--tb-ease),
+        color 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.25s var(--tb-ease),
+        box-shadow 0.25s ease;
+}
+
+.topbar-bell svg {
+    transform-origin: 50% 0%;
+}
+
+.topbar-bell:hover {
+    background: rgba(var(--tb-accent-rgb), 0.16);
+    border-color: rgba(var(--tb-accent-rgb), 0.45);
+    color: var(--tb-accent-soft);
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 12px 26px -10px rgba(var(--tb-accent-rgb), 0.55);
+}
+
+/* playful little ring on hover */
+.topbar-bell:hover svg {
+    animation: tb-ring 0.7s var(--tb-ease);
+}
+
+@keyframes tb-ring {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    15% {
+        transform: rotate(16deg);
+    }
+
+    35% {
+        transform: rotate(-13deg);
+    }
+
+    55% {
+        transform: rotate(9deg);
+    }
+
+    75% {
+        transform: rotate(-5deg);
+    }
+}
+
+.topbar-bell:active {
+    transform: translateY(0) scale(0.94);
+}
+
+.topbar-bell-dot {
+    position: absolute;
+    top: 10px;
+    right: 11px;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--tb-accent-soft);
+    /* blends into the bar gradient behind it */
+    border: 2px solid #2d321f;
+
+    animation: tb-bell-pulse 2.2s ease-out infinite;
+}
+
+@keyframes tb-bell-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--tb-accent-rgb), 0.55);
+    }
+
+    50% {
+        box-shadow: 0 0 0 5px rgba(var(--tb-accent-rgb), 0);
+    }
+}
+
+
+/* ---------- PROFILE CARD ---------- */
+
+.topbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 48px;
+    padding: 0 12px 0 6px;
+
+    background: var(--tb-surface);
+    border: 1px solid var(--tb-border);
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background 0.25s var(--tb-ease),
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s var(--tb-ease);
+}
+
+.topbar-profile:hover {
+    background: rgba(var(--tb-accent-rgb), 0.08);
+    border-color: rgba(var(--tb-accent-rgb), 0.45);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 14px 30px -12px rgba(var(--tb-accent-rgb), 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.topbar-profile:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.topbar-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    background: linear-gradient(135deg, var(--tb-accent) 0%, var(--tb-accent-soft) 100%);
+    border-radius: 11px;
+
+    color: #272c1a;
+    font-size: 13px;
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 18px -6px rgba(var(--tb-accent-rgb), 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+    transition:
+        transform 0.25s var(--tb-ease),
+        box-shadow 0.25s ease;
+}
+
+/* avatar "pops" when you reach for the card */
+.topbar-profile:hover .topbar-avatar {
+    transform: scale(1.06);
+
+    box-shadow:
+        0 10px 22px -6px rgba(var(--tb-accent-rgb), 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.topbar-profile-info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.topbar-profile-name {
+    color: var(--tb-ink);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    max-width: 140px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* lime uppercase — matches .sidebar-user-role exactly */
+.topbar-profile-role {
+    color: var(--tb-accent);
+
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    max-width: 140px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.topbar-chevron {
+    display: grid;
+    place-items: center;
+
+    color: var(--tb-ink-faint);
+
+    transition:
+        transform 0.32s var(--tb-ease),
+        color 0.25s ease;
+}
+
+.topbar-profile:hover .topbar-chevron {
+    transform: rotate(180deg);
+    color: var(--tb-accent-soft);
+}
+
+
+/* =========================================
+   FOCUS STATES
+========================================= */
+
+.topbar-bell:focus-visible,
+.topbar-profile:focus-visible {
+    outline: 2px solid var(--tb-accent);
+    outline-offset: 2px;
+}
+
+
+/* =========================================
+   NARROW DESKTOP
+========================================= */
+
+@media (max-width: 1200px) {
+
+    .topbar-date {
+        display: none;
+    }
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1024px) {
+
+    .topbar {
+        height: 64px;
+
+        padding: 0 12px 0 16px;
+
+        border-radius: 18px;
+    }
+
+    .topbar-heading {
+        gap: 12px;
+    }
+
+    .topbar-title {
+        font-size: 18px;
+    }
+
+    .topbar-subtitle {
+        display: none;
+    }
+
+    .topbar-accent {
+        height: 30px;
+    }
+
+    .topbar-right {
+        gap: 10px;
+    }
+
+    .topbar-profile-info {
+        display: none;
+    }
+
+    .topbar-profile {
+        gap: 8px;
+        padding: 0 8px 0 5px;
+    }
+}
+
+
+/* =========================================
+   MOBILE — topbar disappears,
+   the sidebar takes over as the top bar
+========================================= */
+
+@media (max-width: 768px) {
+
+    .topbar {
+        display: none !important;
+    }
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .topbar,
+    .topbar *,
+    .topbar *::before {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
