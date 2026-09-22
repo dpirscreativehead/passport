@@ -2,6 +2,21 @@ import { ref, get } from "firebase/database";
 import { database } from "../firebase/config";
 
 const permissions = {
+    
+    Master_Admin: {
+        Prefrences: false,
+        Users: true,
+        StudentManage: true,
+        PassIssue: true,
+        PassList: true,
+        RequestManage: true,
+        StaffManage: true,
+        StaffPass: true,
+        StaffRequests: true,
+        StaffPassList: true,
+        ManageUsers: true,
+    },
+    
     Admin: {
         Prefrences: false,
         Users: true,
@@ -33,7 +48,13 @@ const permissions = {
         PassList: true,
         StaffRequests: true,
         StaffPassList: true,
+    },
+
+    Vice_Principal: {
+        RequestManage: true,        
+        StaffRequests: true,        
     }
+
 
     
 };

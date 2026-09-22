@@ -745,7 +745,7 @@ export default function PassIssue() {
   const openIssueForm = () => {
     if (!current) return;
     issueStudentRef.current = current;
-    setIssueForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), authorizedBy: "", goingWith: "Parent", goingWithName: "" });
+    setIssueForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), authorizedBy: "", goingWith: "", goingWithName: "" });
     setIssueError("");
     setIssueOpen(true);
   };
@@ -753,8 +753,14 @@ export default function PassIssue() {
 
   useEffect(() => { if (issueOpen) setTimeout(() => issueReasonRef.current?.focus(), 60); }, [issueOpen]);
 
-  const handleIssueChange = (e) => {
-    setIssueForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const handleIssueChange = (e) => {
+    const { name, value } = e.target;
+    setIssueForm((f) => ({
+      ...f,
+      [name]: value,
+      /* the name is only kept for Guardian / Staff — cleared otherwise */
+      ...(name === "goingWith" && value !== "Guardian" && value !== "Staff" ? { goingWithName: "" } : {}),
+    }));
     setIssueError("");
   };
 
@@ -770,7 +776,7 @@ export default function PassIssue() {
     if (!returnDate || !returnTime) { setIssueError("Please fill in the expected return date and time."); return; }
     if (parseLocal(`${returnDate}T${returnTime}`) < new Date()) { setIssueError("Expected return date & time must be in the future."); return; }
     if (!authorizedBy) { setIssueError("Please enter who authorized this pass (e.g. Principal)."); return; }
-        if ((goingWith === "Guardian" || goingWith === "Staff") && !goingWithName.trim()) { setIssueError(`Please enter the name of the ${goingWith.toLowerCase()} going with the student.`); return; }
+    if (!goingWith) { setIssueError("Please select who is going with the student."); return; }
 
     const now = new Date().toISOString();
     const slipNo = makeSlipNo(readPasses());
@@ -808,7 +814,7 @@ export default function PassIssue() {
   const openRequestForm = () => {
     if (!current) return;
     requestStudentRef.current = current;
-    setRequestForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), goingWith: "Parent", goingWithName: "" });
+    setRequestForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), goingWith: "", goingWithName: "" });
     setRequestError("");
     setRequestOpen(true);
   };
@@ -816,8 +822,14 @@ export default function PassIssue() {
 
   useEffect(() => { if (requestOpen) setTimeout(() => requestReasonRef.current?.focus(), 60); }, [requestOpen]);
 
-  const handleRequestChange = (e) => {
-    setRequestForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const handleRequestChange = (e) => {
+    const { name, value } = e.target;
+    setRequestForm((f) => ({
+      ...f,
+      [name]: value,
+      /* the name is only kept for Guardian / Staff — cleared otherwise */
+      ...(name === "goingWith" && value !== "Guardian" && value !== "Staff" ? { goingWithName: "" } : {}),
+    }));
     setRequestError("");
   };
 
@@ -831,7 +843,7 @@ export default function PassIssue() {
     if (!reason) { setRequestError("Please enter the reason for the day pass."); return; }
     if (!returnDate || !returnTime) { setRequestError("Please fill in the expected return date and time."); return; }
     if (parseLocal(`${returnDate}T${returnTime}`) < new Date()) { setRequestError("Expected return date & time must be in the future."); return; }
-        if ((goingWith === "Guardian" || goingWith === "Staff") && !goingWithName.trim()) { setRequestError(`Please enter the name of the ${goingWith.toLowerCase()} going with the student.`); return; }
+    if (!goingWith) { setRequestError("Please select who is going with the student."); return; }
 
     const now = new Date().toISOString();
     const pass = {
@@ -1323,32 +1335,43 @@ export default function PassIssue() {
                     {AUTH_OPTIONS.map((a) => <option key={a} value={a} />)}
                   </datalist>
                 </div>
-                <label className="pi-input">
-  <span>Going with</span>
-  <select
-    name="goingWith"
-    value={issueForm.goingWith}
-    onChange={handleIssueChange}
-  >
-    {GOING_WITH_OPTIONS.map((o) => (
-      <option key={o} value={o}>{o}</option>
-    ))}
-  </select>
-</label>
+                                      {/* ---------- Going With (required) ---------- */}
+                      <div className="pi-field">
+                        <label htmlFor="issue-goingWith">
+                          Going With <span className="pi-req-star">*</span>
+                        </label>
+                        <select
+                          id="issue-goingWith"
+                          name="goingWith"
+                          className={`pi-input pi-select-gw ${issueError && issueError.includes("who is going with") ? "pi-input-invalid" : ""}`}
+                          value={issueForm.goingWith}
+                          onChange={handleIssueChange}
+                        >
+                          
+                          {GOING_WITH_OPTIONS.map((o) => (
+                            <option key={o} value={o}>{o}</option>
+                          ))}
+                        </select>
+                      </div>
 
-{(issueForm.goingWith === "Guardian" || issueForm.goingWith === "Staff") && (
-  <label className="pi-field">
-    <span>{issueForm.goingWith === "Guardian" ? "Guardian name" : "Staff name"}</span>
-    <input
-      type="text"
-      name="goingWithName"
-      value={issueForm.goingWithName}
-      onChange={handleIssueChange}
-      placeholder={`Name of the ${issueForm.goingWith.toLowerCase()}`}
-      autoComplete="off"
-    />
-  </label>
-)}
+                      {/* ---------- Guardian / Staff name (required) ---------- */}
+                      {(issueForm.goingWith === "Guardian" || issueForm.goingWith === "Staff") && (
+                        <div className="pi-field pi-gw-name-field">
+                          <label htmlFor="issue-goingWithName">
+                            {issueForm.goingWith} Name <span className="pi-req-star">*</span>
+                          </label>
+                          <input
+                            id="issue-goingWithName"
+                            name="goingWithName"
+                            type="text"
+                            className={`pi-input ${issueError && issueError.includes("name of the") ? "pi-input-invalid" : ""}`}
+                            placeholder={`Enter the ${issueForm.goingWith.toLowerCase()}'s name`}
+                            value={issueForm.goingWithName}
+                            onChange={handleIssueChange}
+                            autoComplete="off"
+                          />
+                        </div>
+                      )}
                 {issueError && <div className="pi-alert pi-alert-error">{issueError}</div>}
                 
               </div>
@@ -1390,6 +1413,9 @@ export default function PassIssue() {
                     list="pi-reason-options"
                     placeholder="Why is the day pass needed?"
                   />
+                  <datalist id="pi-reason-options">
+                    {REASON_OPTIONS.map((r) => <option key={r} value={r} />)}
+                  </datalist>
                 </div>
                 <div className="pi-field">
   <label htmlFor="pi-req-date">Expected return Date</label>
@@ -1415,36 +1441,45 @@ export default function PassIssue() {
     onChange={handleRequestChange}
   />
 </div>
-<label className="pi-input">
-  <span>Going with</span>
-  <select
-    name="goingWith"
-    value={requestForm.goingWith}
-    onChange={handleRequestChange}
-  >
-    {GOING_WITH_OPTIONS.map((o) => (
-      <option key={o} value={o}>{o}</option>
-    ))}
-  </select>
-</label>
+                      {/* ---------- Going With (required) ---------- */}
+                      <div className="pi-field">
+                        <label htmlFor="request-goingWith">
+                          Going With <span className="pi-req-star">*</span>
+                        </label>
+                        <select
+                          id="request-goingWith"
+                          name="goingWith"
+                          className={`pi-input pi-select-gw ${requestError && requestError.includes("who is going with") ? "pi-input-invalid" : ""}`}
+                          value={requestForm.goingWith}
+                          onChange={handleRequestChange}
+                        >
+                          
+                          {GOING_WITH_OPTIONS.map((o) => (
+                            <option key={o} value={o}>{o}</option>
+                          ))}
+                        </select>
+                      </div>
 
-{(requestForm.goingWith === "Guardian" || requestForm.goingWith === "Staff") && (
-  <label className="pi-field">
-    <span>{requestForm.goingWith === "Guardian" ? "Guardian name" : "Staff name"}</span>
-    <input
-      type="text"
-      name="goingWithName"
-      value={requestForm.goingWithName}
-      onChange={handleRequestChange}
-      placeholder={`Name of the ${requestForm.goingWith.toLowerCase()}`}
-      autoComplete="off"
-    />
-  </label>
-)}
+                      {/* ---------- Guardian / Staff name (required) ---------- */}
+                      {(requestForm.goingWith === "Guardian" || requestForm.goingWith === "Staff") && (
+                        <div className="pi-field pi-gw-name-field">
+                          <label htmlFor="request-goingWithName">
+                            {requestForm.goingWith} Name <span className="pi-req-star">*</span>
+                          </label>
+                          <input
+                            id="request-goingWithName"
+                            name="goingWithName"
+                            type="text"
+                            className={`pi-input ${requestError && requestError.includes("name of the") ? "pi-input-invalid" : ""}`}
+                            placeholder={`Enter the ${requestForm.goingWith.toLowerCase()}'s name`}
+                            value={requestForm.goingWithName}
+                            onChange={handleRequestChange}
+                            autoComplete="off"
+                          />
+                        </div>
+                      )}
                 {requestError && <div className="pi-alert pi-alert-error">{requestError}</div>}
-                <p className="pi-modal-note">
-                  The request is sent to the Principal's approval desk.
-                </p>
+                
               </div>
             </div>
             <div className="pi-modal-footer">
