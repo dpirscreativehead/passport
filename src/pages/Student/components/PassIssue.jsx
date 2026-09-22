@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { ref, onValue, set, update } from "firebase/database";
 import { database } from "../../../firebase/config"; // ← same config the Students page uses — adjust the relative path if this component sits at a different depth
 import "./PassIssue.css";
+import PassIssueSupport from "./PassIssueSupport"; // ← new support section (pass tabs + smart search)
 
 /* =====================================================================
    PASS ISSUE DESK — the gate operator's main working screen
@@ -639,7 +640,7 @@ export default function PassIssue() {
         overlayOpenRef.current ||
         cooldownRef.current ||
         manualFocusRef.current ||
-        !!document.querySelector(".sm-overlay");
+        !!document.querySelector(".ds-overlay, .sm-overlay");
 
       /* ---------- scanner paused — protect whatever is focused ---------- */
       if (paused) {
@@ -707,11 +708,30 @@ export default function PassIssue() {
     return () => { window.removeEventListener("keydown", onKey, true); if (resetTimer) clearTimeout(resetTimer); };
   }, []);
 
+  /* ================= SUPPORT SECTION CALLBACKS ================= */
+  /* the smart-search box below borrows the manual input's pause
+     mechanism — while the operator types there, the RFID scanner is
+     paused so keystrokes can never be mistaken for a card read */
+  const handleSupportFocus = (focused) => {
+    manualFocusRef.current = focused;
+    setManualFocus(focused);
+  };
+
+  /* ↵ Enter on a search result → the RFID lands in the manual box,
+     focused and selected — one Find click away, no re-scanning */
+  const handleUseRfid = (rfid) => {
+    const norm = normalizeRfid(rfid);
+    if (!norm) return;
+    setManualId(norm);
+    setTimeout(() => {
+      manualInputRef.current?.focus();
+      manualInputRef.current?.select();
+    }, 40);
+  };
+
   /* ================= MANUAL LOOKUP ================= */
-  const handleManualSubmit = (e) => {
-    e.preventDefault();
+    const handleManualFind = () => {
     const q = manualId.trim();
-    if (!q) { manualInputRef.current?.focus(); return; }
 
     if (!storesReadyRef.current) {
       beep(false);
@@ -745,7 +765,7 @@ export default function PassIssue() {
   const openIssueForm = () => {
     if (!current) return;
     issueStudentRef.current = current;
-    setIssueForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), authorizedBy: "", goingWith: "", goingWithName: "" });
+    setIssueForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), authorizedBy: "", goingWith: "Parent", goingWithName: "" });
     setIssueError("");
     setIssueOpen(true);
   };
@@ -814,7 +834,7 @@ export default function PassIssue() {
   const openRequestForm = () => {
     if (!current) return;
     requestStudentRef.current = current;
-    setRequestForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), goingWith: "", goingWithName: "" });
+    setRequestForm({ reason: "", returnDate: todayStr(), returnTime: nextHalfHour(1), goingWith: "Parent", goingWithName: "" });
     setRequestError("");
     setRequestOpen(true);
   };
@@ -1052,7 +1072,7 @@ export default function PassIssue() {
             )}
           </div>
 
-          <form className="pi-manual" onSubmit={handleManualSubmit}>
+            <div className="pi-manual">
             <span className="pi-manual-label">Or enter manually</span>
             <div className="pi-manual-form">
               <input
@@ -1062,6 +1082,10 @@ export default function PassIssue() {
                 onFocus={() => { manualFocusRef.current = true; setManualFocus(true); }}
                 onBlur={() => { manualFocusRef.current = false; setManualFocus(false); }}
                 onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault(); e.stopPropagation();
+                    handleManualFind();
+                  }
                   if (e.key === "Escape") {
                     e.preventDefault(); e.stopPropagation();
                     setManualId("");
@@ -1073,9 +1097,9 @@ export default function PassIssue() {
                 spellCheck={false}
                 aria-label="Student ID number"
               />
-              <button type="submit" className="pi-btn pi-btn-ghost">Find</button>
+              <button type="button" className="pi-btn pi-btn-ghost" onClick={handleManualFind}>Find</button>
             </div>
-          </form>
+          </div>
         </div>
 
         {/* ---------- result panel — FIXED height, never changes ---------- */}
@@ -1494,6 +1518,9 @@ export default function PassIssue() {
       {toast && (
         <div key={toast.id} className={`pi-toast pi-toast-${toast.type}`}>{toast.text}</div>
       )}
+          {/* ---------- support section: pass tabs + smart search ---------- */}
+      <PassIssueSupport onUseRfid={handleUseRfid} onSearchFocus={handleSupportFocus} />
+
     </section>
   );
 }

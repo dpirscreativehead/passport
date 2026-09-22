@@ -1,10 +1,10 @@
 import "./student.css";
-import { hasPermission } from "../../services/permissions";
 import StudentManage from "./components/StudentManage";
 import Permission from "../../components/Permission";
 import PassIssue from "./components/PassIssue";
 import RequestManage from "./components/RequestManage";
 import PassList from "./components/PassList";
+import PassIssueSupport from "./components/PassIssueSupport";
 
 function Student() {
     return (
@@ -15,6 +15,7 @@ function Student() {
            <Permission permission="PassIssue">
               <PassIssue />
            </Permission>
+               
            <Permission permission="RequestManage">
               <RequestManage />
            </Permission> 

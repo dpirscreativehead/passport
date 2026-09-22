@@ -54,8 +54,7 @@ function Topbar() {
 
     const subtitle =
         location.pathname === "/dashboard"
-            ? ""
-            : "DPIRS PassPort";
+           
 
     const today = new Date().toLocaleDateString("en-US", {
         weekday: "long",

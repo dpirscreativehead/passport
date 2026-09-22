@@ -46,9 +46,7 @@
     min-height: 100vh;
     padding: 32px 20px 64px;
     box-sizing: border-box;
-    margin-top: -70px;
-    margin-bottom: -190px;
-
+    
     /* ← NO page background — stays transparent, app bg shows through */
     background: transparent;
 

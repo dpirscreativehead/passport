@@ -37,7 +37,7 @@
     min-height: 100vh;
     padding: 32px 20px 64px;
     box-sizing: border-box;
-    margin-top: -40px;              /* matches UserManage page offset */
+             /* matches UserManage page offset */
 
     background: transparent;        /* app background shows through */
     color: var(--sm-ink);
