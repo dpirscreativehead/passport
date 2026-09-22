@@ -707,15 +707,7 @@ export default function Dashboard() {
           <div className="db-heading">
             
           </div>
-          <div className="db-header-right">
-            <div className="db-live">
-              <span className={`db-live-dot${syncError ? " db-live-dot-error" : ""}`} />
-              <span className="db-live-text">{syncError ? "sync issue" : "live"}</span>
-              <span className="db-live-sep">·</span>
-              <span className="db-clock">{clockLabel}</span>
-            </div>
-            
-          </div>
+          
         </header>
 
         {loading ? (

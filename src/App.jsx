@@ -17,7 +17,7 @@ import Users from "./pages/Users/users";
 
 function App() {
     return (
-        <BrowserRouter>
+       
             <Routes>
 
                 {/* Login */}
@@ -64,7 +64,7 @@ function App() {
                 <Route path="*" element={<Login />} />
 
             </Routes>
-        </BrowserRouter>
+        
     );
 }
 
