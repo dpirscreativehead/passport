@@ -4,7 +4,6 @@ import Permission from "../../components/Permission";
 import PassIssue from "./components/PassIssue";
 import RequestManage from "./components/RequestManage";
 import PassList from "./components/PassList";
-import PassIssueSupport from "./components/PassIssueSupport";
 
 function Student() {
     return (

@@ -13,6 +13,7 @@ import Reports from "./pages/Reports/reports";
 import Preferences from "./pages/Preferences/preferences";
 import Profile from "./pages/Profile/profile";
 import Users from "./pages/Users/users";
+import Data from "./pages/Data/data";
 
 
 function App() {
@@ -52,6 +53,12 @@ function App() {
                             <Route
                                 path="/users"
                                 element={<Users />}
+                            />
+                        </Route>
+                        <Route element={<PermissionRoute permission="Data" />}>
+                            <Route
+                                path="/data"
+                                element={<Data />}
                             />
                         </Route>
 

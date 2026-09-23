@@ -539,7 +539,7 @@ export default function PassList() {
   }, [typeFilter, statusFilter, dateMode, search]);
 
   const statCards = [
-    { key: "total",     icon: "🗂️", label: "Total passes",     value: stats.total,     tone: "indigo", active: filtersClean,                  apply: () => resetFilters() },
+    
     { key: "today",     icon: "📅", label: "Movements today",  value: stats.today,     tone: "blue",   active: isSolo({ date: "TODAY" }),     apply: () => { resetFilters(); setDateMode("TODAY"); } },
     { key: "out",       icon: "🚶", label: "Out on pass now",  value: stats.out,       tone: "green",  active: isSolo({ status: "ISSUED" }),   apply: () => { resetFilters(); setStatusFilter("ISSUED"); } },
     { key: "pending",   icon: "⏳", label: "Pending requests", value: stats.pending,   tone: "amber",  active: isSolo({ status: "REQUESTED" }),apply: () => { resetFilters(); setStatusFilter("REQUESTED"); } },

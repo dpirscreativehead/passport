@@ -502,13 +502,7 @@ export default function StaffPassList() {
 
       {/* ---------- live stats ---------- */}
       <div className="spl-stats">
-        <div className="spl-stat spl-stat-total">
-          <span className="spl-stat-icon">🗂️</span>
-          <div>
-            <span className="spl-stat-num">{loading ? "…" : stats.total}</span>
-            <span className="spl-stat-label">Total passes</span>
-          </div>
-        </div>
+        
         <div className="spl-stat spl-stat-moves">
           <span className="spl-stat-icon">📊</span>
           <div>

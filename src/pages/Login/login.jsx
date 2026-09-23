@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ref, get } from "firebase/database";
 import { database } from "../../firebase/config";
-import PassPortIcon from "../../assets/images/passport-icon.png";
+import PassPortIcon from "../../assets/images/passport-icon.webp";
 import "./login.css";
 
 const IconUser = () => (

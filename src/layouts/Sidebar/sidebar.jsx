@@ -67,6 +67,24 @@ const IconUsers = () => (
     </svg>
 );
 
+const IconData = () => (
+    <svg
+        width="19"
+        height="19"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <ellipse cx="12" cy="5" rx="8" ry="3" />
+        <path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5" />
+        <path d="M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" />
+    </svg>
+);
+
 const IconLogout = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" />
@@ -286,6 +304,13 @@ function Sidebar() {
                         <NavLink to="/users">
                             <span className="nav-icon"><IconUsers /></span>
                             <span className="nav-label">Users</span>
+                        </NavLink>
+                    </Permission>
+
+                    <Permission permission="Data">
+                        <NavLink to="/data">
+                            <span className="nav-icon"><IconData /></span>
+                            <span className="nav-label">Data</span>
                         </NavLink>
                     </Permission>
 

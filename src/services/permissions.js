@@ -6,6 +6,7 @@ const permissions = {
     Master_Admin: {
         Prefrences: false,
         Users: true,
+        Data: true,
         StudentManage: true,
         PassIssue: true,
         PassIssueSupport: true,
@@ -21,6 +22,7 @@ const permissions = {
     Admin: {
         Prefrences: false,
         Users: true,
+        Data: false,
         StudentManage: true,
         PassIssue: true,
         PassIssueSupport: true,

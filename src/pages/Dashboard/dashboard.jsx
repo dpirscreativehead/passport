@@ -579,13 +579,11 @@ export default function Dashboard() {
   })), [data, ready]);
 
   /* ================= STAT CARDS ================= */
-  const statCards = [
-    { icon: "🗂️", tone: "lime",  label: "Total records",     value: stats.total,          note: `+${stats.activityToday} today`,                spark: sparks.activity },
+  const statCards = [    
     { icon: "🚶", tone: "green", label: "Out on pass",       value: stats.out,            note: `${stats.expectedToday} expected back today`,   split: { a: stats.outStudents, b: stats.outStaff } },
     { icon: "⏳", tone: "amber", label: "Pending approvals", value: stats.pending,        note: `+${stats.newToday} raised today`,              spark: sparks.raised },
-    { icon: "🎫", tone: "blue",  label: "Issued today",      value: stats.issuedToday,    note: `peak ${peakIssued}/day · 14 d`,                spark: sparks.issued },
-    
     { icon: "⚠️", tone: "red",   label: "Overdue",           value: stats.overdue,        note: stats.overdue > 0 ? "⚠ attention needed now" : "✓ all passes on time", alert: stats.overdue > 0 },
+    { icon: "🎫", tone: "blue",  label: "Issued today",      value: stats.issuedToday,    note: `peak ${peakIssued}/day · 14 d`,                spark: sparks.issued },
   ];
 
   const outTs = (r) => r.outAt || r.printedAt || r.issuedAt || r.createdAt;
