@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
 
@@ -20,6 +20,9 @@ function App() {
     return (
        
             <Routes>
+
+                {/* Root */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
                 {/* Login */}
                 <Route path="/login" element={<Login />} />
