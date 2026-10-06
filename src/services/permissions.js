@@ -3,11 +3,14 @@ import { database } from "../firebase/config";
 
 const permissions = {
     
-    Master_Admin: {
+    Master_Admin: { 
+        MainDashboard: true,
+        PrincipalDashboard: false,       
         Prefrences: false,
         Users: true,
         Data: true,
         Reports: true,
+        Calendar: true,
         StudentManage: true,
         PassIssue: true,
         PassIssueSupport: true,
@@ -20,7 +23,9 @@ const permissions = {
         ManageUsers: true,
     },
     
-    Admin: {
+    Admin: {  
+        MainDashboard: true, 
+        PrincipalDashboard: false,    
         Prefrences: false,
         Users: true,
         Data: false,
@@ -36,7 +41,9 @@ const permissions = {
         ManageUsers: true,
     },
 
-    Receptionist: {
+    Receptionist: { 
+        MainDashboard: true,
+        PrincipalDashboard: false,       
         Prefrences: false,
         Users: false,
         Reports: true,
@@ -51,7 +58,9 @@ const permissions = {
         ManageUsers: false,
     },
 
-    Principal: {
+    Principal: {  
+        MainDashboard: false,
+        PrincipalDashboard: true,          
         Reports: true,
         RequestManage: true,
         PassList: true,
@@ -60,14 +69,19 @@ const permissions = {
         StaffPassList: true,
     },
 
-    Vice_Principal: {
+    Vice_Principal: {    
+        MainDashboard: false,
+        PrincipalDashboard: true,     
         RequestManage: true,        
         StaffRequests: true, 
         PassIssueSupport: false,       
     },   
     
     Coordinator: {
+        MainDashboard: true,
+        PrincipalDashboard: false,        
         Reports: false,
+        Calendar: true,
         PassList: true,
         StaffPassList: true,
 
