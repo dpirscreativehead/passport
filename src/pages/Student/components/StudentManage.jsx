@@ -45,7 +45,7 @@ const STORAGE_KEY      = "sms_students_v1"; // legacy — no longer the source o
 const PASSES_KEY       = "sms_passes_v1";  // legacy localStorage passes — still watched so older Pass-desk components stay live
 
 const PAGE_SIZE = 50;                       // rows per page (fixed)
-const EMPTY_FORM = { rfid: "", studentId: "", name: "", className: "" };
+const EMPTY_FORM = { rfid: "", studentId: "", name: "", className: "", category: "" };
 
 /* ---------- student status — set by the system, never asked ---------- */
 const STATUS_VALUES = ["IN", "OUT", "REQUESTED", "APPROVED"];   // searchable
@@ -60,8 +60,14 @@ const STATUS_META = {
 /* a pass in one of these states overrides the plain student status */
 const ACTIVE_PASS_STATUSES = ["REQUESTED", "APPROVED", "ISSUED"];
 
-const EDITABLE_FIELDS = ["name", "studentId", "className", "rfid"];   // status is read-only
-const FIELD_LABELS = { name: "Name", studentId: "ID No", className: "Class", rfid: "RFID No" };
+const EDITABLE_FIELDS = ["name", "studentId", "className", "category", "rfid"];   // status is read-only
+const FIELD_LABELS = { name: "Name", studentId: "ID No", className: "Class", rfid: "RFID No", category: "Category" };
+
+/* Category — the ONLY two values ever stored in Firebase */
+const CATEGORY_VALUES = ["Day Scholar", "Boarder"];
+const normalizeCategory = (v) =>
+  CATEGORY_VALUES.includes(String(v || "").trim()) ? String(v || "").trim() : "";
+const CATEGORY_SHORT = { "Day Scholar": "D", "Boarder": "B" };   // compact display in the table
 
 const CSV_FIELDS = ["rfid", "studentId", "name", "className"];        // status is NOT a CSV column
 const CSV_HEADER_MAP = {
@@ -181,6 +187,7 @@ function sanitizeStudents(val) {
     name: String(s.name || "").trim(),
     className: String(s.className || "").trim(),
     status: normalizeStatus(s.status),          // missing / invalid → "IN"
+    category: normalizeCategory(s.category),    // "Day Scholar" | "Boarder" | "" (not set)
     lastMovement: s.lastMovement || null,
     createdAt: s.createdAt || new Date(now - i * 60000).toISOString(),
   }));
@@ -408,7 +415,8 @@ export default function StudentManage() {
         if (s.name.toLowerCase().includes(q)) return true;
         if (s.studentId.toLowerCase().includes(q)) return true;
         if (s.className.toLowerCase().includes(q)) return true;
-        if (normalizeRfid(s.rfid).includes(qn)) return true;
+                if (normalizeRfid(s.rfid).includes(qn)) return true;
+        if (s.category && s.category.toLowerCase().includes(q)) return true;   // "boarder" / "day scholar"
         const st = resolveStatus(s).key;         // "in", "out", "requested", "approved"…
         return st.includes(qs) || STATUS_META[st].label.toUpperCase().includes(qs);
       });
@@ -483,8 +491,12 @@ export default function StudentManage() {
       : String(student[field] ?? "").trim();
     if (value === original) return;                     // nothing changed
 
-    if (!value) {
+        if (!value) {
       showToast(`⚠ ${FIELD_LABELS[field]} cannot be empty — change reverted.`, "error");
+      return;
+    }
+    if (field === "category" && !CATEGORY_VALUES.includes(value)) {
+      showToast("⚠ Category must be Day Scholar or Boarder — change reverted.", "error");
       return;
     }
     if (field === "rfid") {
@@ -551,7 +563,7 @@ export default function StudentManage() {
       onKeyDown={(e) => {
         if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
         else if (e.key === "Escape") { e.preventDefault(); cancelEdit(); }
-        else if (e.key === "Tab") {
+                else if (e.key === "Tab") {
           e.preventDefault();
           commitAndMove(e.shiftKey ? -1 : 1, editing.id, editing.field);
         }
@@ -559,6 +571,30 @@ export default function StudentManage() {
       spellCheck={false}
       autoComplete="off"
     />
+  );
+
+  /* ---- Category cell editor — a dropdown with ONLY the two allowed values.
+     Works exactly like the text cells: pick an option, then click away /
+     Enter saves · Esc cancels · Tab moves to the next cell.               */
+  const renderCategoryEditor = () => (
+    <select
+      className="sm-cell-select"
+      value={CATEGORY_VALUES.includes(editValue) ? editValue : ""}
+      autoFocus
+      onChange={handleEditChange}
+      onBlur={commitEdit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+        else if (e.key === "Escape") { e.preventDefault(); cancelEdit(); }
+        else if (e.key === "Tab") {
+          e.preventDefault();
+          commitAndMove(e.shiftKey ? -1 : 1, editing.id, editing.field);
+        }
+      }}
+    >
+      <option value="" disabled>— select —</option>
+      {CATEGORY_VALUES.map((c) => <option key={c} value={c}>{c}</option>)}
+    </select>
   );
 
   /* live status pill — resolved fresh from the students + passes stores */
@@ -655,10 +691,15 @@ export default function StudentManage() {
     const rfid = normalizeRfid(form.rfid);
     const studentId = form.studentId.trim();
     const name = form.name.trim();
-    const className = form.className.trim();
+        const className = form.className.trim();
+    const category = normalizeCategory(form.category);   // "Day Scholar" | "Boarder" | ""
 
     if (!rfid || !studentId || !name || !className) {
-      setFormError("All fields are required — RFID No, ID No, Name and Class.");
+      setFormError("All fields are required — RFID No, ID No, Name, Class and Category.");
+      return;
+    }
+    if (!category) {
+      setFormError("Please choose the Category — Day Scholar or Boarder.");
       return;
     }
     const fresh = studentsRef.current;          // freshest — dup checks never go stale
@@ -673,9 +714,10 @@ export default function StudentManage() {
       return;
     }
 
-    const newStudent = {
+        const newStudent = {
       _id: uid(),
       rfid, studentId, name, className,
+      category,                      // ← "Day Scholar" | "Boarder" — stored in Firebase
       status: DEFAULT_STATUS,        // ← always "In", never asked in the form
       lastMovement: null,
       createdAt: new Date().toISOString(),     // newest → appears at the top
@@ -878,9 +920,11 @@ export default function StudentManage() {
           <button className="sm-btn sm-btn-primary" onClick={openModal}>
             ＋ Add Student
           </button>
+          {/*
           <button className="sm-btn sm-btn-ghost" onClick={triggerImport} title="Bulk import students from a CSV file">
             📥 Import CSV
           </button>
+          */}
 
           <input
             ref={fileRef}
@@ -902,6 +946,7 @@ export default function StudentManage() {
                 <th scope="col" className="sm-th sm-th-name">Name</th>
                 <th scope="col" className="sm-th sm-th-id">ID No</th>
                 <th scope="col" className="sm-th sm-th-class">Class</th>
+                <th scope="col" className="sm-th sm-th-cat" title="D = Day Scholar · B = Boarder — click a cell to set it">Category</th>
                 <th scope="col" className="sm-th sm-th-rfid">RFID No</th>
                 <th scope="col" className="sm-th sm-th-status" title="In · Out · Requested · Approved">Status</th>
                 <th scope="col" className="sm-th sm-th-actions">Actions</th>
@@ -911,7 +956,7 @@ export default function StudentManage() {
             <tbody>
               {pageRows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="sm-td sm-empty-cell">
+                  <td colSpan={8} className="sm-td sm-empty-cell">
                     {!dbLoaded ? (
                       <div className="sm-empty">
                         <div className="sm-empty-icon">🎓</div>
@@ -977,7 +1022,7 @@ export default function StudentManage() {
                       )}
                     </td>
 
-                    {/* Class */}
+                                        {/* Class */}
                     <td
                       className={`sm-td sm-td-class sm-editable ${isEditing(s, "className") ? "sm-td-editing" : ""}`}
                       onClick={() => handleCellClick(s, "className")}
@@ -985,6 +1030,26 @@ export default function StudentManage() {
                     >
                       {isEditing(s, "className") ? renderEditor("className") : (
                         <span className="sm-class-badge">{s.className}</span>
+                      )}
+                    </td>
+
+                    {/* Category — D = Day Scholar · B = Boarder (click to set) */}
+                    <td
+                      className={`sm-td sm-td-cat sm-editable ${isEditing(s, "category") ? "sm-td-editing" : ""}`}
+                      onClick={() => handleCellClick(s, "category")}
+                      title="Click to set — Day Scholar or Boarder"
+                    >
+                      {isEditing(s, "category") ? renderCategoryEditor() : (
+                        s.category ? (
+                          <span
+                            className={`sm-cat-badge ${s.category === "Boarder" ? "sm-cat-b" : "sm-cat-d"}`}
+                            title={s.category}
+                          >
+                            {CATEGORY_SHORT[s.category]}
+                          </span>
+                        ) : (
+                          <span className="sm-cat-none" title="Not set — click to choose">—</span>
+                        )
                       )}
                     </td>
 
@@ -1167,7 +1232,7 @@ export default function StudentManage() {
                   />
                 </div>
 
-                <div className="sm-field">
+                                <div className="sm-field">
                   <label htmlFor="sm-form-class">Class *</label>
                   <input
                     id="sm-form-class"
@@ -1176,10 +1241,27 @@ export default function StudentManage() {
                     value={form.className}
                     onChange={handleFormChange}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAdd(); } }}
-                    placeholder="e.g. VIII A"
+                    placeholder="e.g. IX A"
                     autoComplete="off"
                     className="sm-input"
                   />
+                </div>
+
+                {/* Category — dropdown with ONLY the two allowed values */}
+                <div className="sm-field">
+                  <label htmlFor="sm-form-category">Category *</label>
+                  <select
+                    id="sm-form-category"
+                    name="category"
+                    value={form.category}
+                    onChange={handleFormChange}
+                    className="sm-input sm-input-select"
+                  >
+                    <option value="" disabled>— choose Day Scholar or Boarder —</option>
+                    {CATEGORY_VALUES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

@@ -268,8 +268,8 @@
 
 /* ================= TABLE ================= */
 .sm-table {
-    width: 100%;
-    min-width: 950px;
+    width: 100%;    
+    min-width: 1030px;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 0.92rem;
@@ -698,7 +698,7 @@
     border-radius: 20px;
 
     width: 100%;
-    max-width: 480px;
+    max-width: 560px;
     max-height: 90vh;
     overflow-y: auto;
 
@@ -1132,4 +1132,86 @@
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ==========================================================
+   CATEGORY column (between Class and RFID)
+   D = Day Scholar · B = Boarder · "—" = not set yet
+   ========================================================== */
+.sm-th-cat, .sm-td-cat { text-align: center; width: 92px; }
+
+.sm-cat-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    border: 1px solid;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* D — Day Scholar (blue) */
+.sm-cat-d {
+    background: rgba(var(--sm-blue-rgb), 0.12);
+    border-color: rgba(var(--sm-blue-rgb), 0.30);
+    color: var(--sm-blue);
+}
+
+/* B — Boarder (amber) */
+.sm-cat-b {
+    background: rgba(var(--sm-amber-rgb), 0.12);
+    border-color: rgba(var(--sm-amber-rgb), 0.30);
+    color: var(--sm-amber);
+}
+
+.sm-cat-none { color: var(--sm-ink-faint); font-weight: 700; cursor: pointer; }
+
+/* dropdown editor inside the Category cell (only 2 options) */
+.sm-cell-select {
+    width: 100%;
+    border: 1.5px solid rgba(var(--sm-accent-rgb), 0.60);
+    border-radius: 9px;
+    padding: 7px 8px;
+    font-size: 0.85rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--sm-ink);
+    background: #272c1a;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(var(--sm-accent-rgb), 0.14);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sm-cell-select:focus { border-color: rgba(var(--sm-accent-rgb), 0.90); }
+.sm-cell-select option { background: #272c1a; color: var(--sm-ink); }
+
+
+/* ==========================================================
+   Add-student modal — Category dropdown (theme-matched)
+   Same size / borders / focus as every other .sm-input
+   ========================================================== */
+select.sm-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 42px;
+
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fd700' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 15px;
+}
+
+select.sm-input option {
+    background: #272c1a;
+    color: var(--sm-ink);
+    font-weight: 600;
+}
+
+select.sm-input option:disabled {
+    color: var(--sm-ink-faint);
 }
